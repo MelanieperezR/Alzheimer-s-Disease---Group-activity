@@ -164,10 +164,10 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
 
     
      # TAB 2 (NUEVO GRÁFICO AÑADIDO)
-with tab2:
-    st.subheader("Comparativa de Extremos: Top 5 vs Bottom 5")
+     with tab2:
+         st.subheader("Comparativa de Extremos: Top 5 vs Bottom 5")
 
-    df_ranking = (
+        df_ranking = (
         df_mapa.groupby('LocationDesc')['Data_Value']
         .mean()
         .sort_values(ascending=False)
