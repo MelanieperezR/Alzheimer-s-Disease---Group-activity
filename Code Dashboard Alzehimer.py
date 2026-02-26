@@ -167,26 +167,25 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
 
     # --- COMPARATIVO ---
     with pestañas[1]:
-        st.subheader("Estados con Mayor y Menor Tasa de Prevalencia")
-
-        ranking = (
-            df_filtrado.groupby('Estado')['Tasa de Prevalencia (%)']
-            .mean()
-            .sort_values(ascending=False)
-            .reset_index()
-        )
-
-        if not ranking.empty:
-            fig_bar = px.bar(
-                ranking,
-                x='Tasa de Prevalencia (%)',
-                y='Estado',
-                orientation='h',
-                color='Tasa de Prevalencia (%)',
-                color_continuous_scale=["#DBEAFE", "#1E3A8A"]
-            )
-            fig_bar.update_layout(yaxis={'categoryorder':'total ascending'})
-            st.plotly_chart(fig_bar, use_container_width=True)
+       
+        st.subheader("Análisis Comparativo de los Extremos: Top 5 ")
+        df_ranking = df_mapa.groupby('LocationDesc')['Data_Value'].mean().sort_values(ascending=False).reset_index()
+ 
+        if not df_ranking.empty:
+            c_top, c_bot = st.columns(2)
+            with c_top:
+                st.markdown("**Estados con mayor prevalencia**")
+                fig_top = px.bar(df_ranking.head(5), x='Tasa de Prevalencia (%)', y='Estado , orientation='h',
+                                 color='Data_Value', color_continuous_scale='Reds')
+                fig_top.update_layout(showlegend=False, yaxis={'categoryorder':'total ascending'})
+                st.plotly_chart(fig_top, use_container_width=True)
+ 
+            with c_bot:
+                st.markdown("**Estados con menor prevalencia**")
+                fig_bot = px.bar(df_ranking.tail(5),  x='Tasa de Prevalencia (%)', y='Estado , orientation='h',
+                                 color='Data_Value', color_continuous_scale='Greens')
+                fig_bot.update_layout(showlegend=False, yaxis={'categoryorder':'total descending'})
+                st.plotly_chart(fig_bot, use_container_width=True)
 
     # --- DEMOGRÁFICO ---
     with pestañas[2]:
