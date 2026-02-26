@@ -79,17 +79,25 @@ df = load_data()
 
 if df is not None:
 
-    # Título principal
+    # Renombrar columnas visibles al usuario
+    df = df.rename(columns={
+        "Stratification1": "Rango de Edad",
+        "Stratification2": "Sexo",
+        "LocationDesc": "Estado",
+        "LocationAbbr": "Código Estado",
+        "Data_Value": "Tasa de Prevalencia (%)",
+        "YearStart": "Año"
+    })
+
     st.title("Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos")
 
-    # Bloque informativo institucional
     st.info("""
-**Fuente de los datos:** Behavioral Risk Factor Surveillance System (BRFSS) – CDC.  
+**Fuente de los datos:** Sistema de Vigilancia de Factores de Riesgo Conductuales (BRFSS) – CDC.  
 Los valores corresponden a prevalencia autoreportada de dificultad cognitiva funcional.
 
 **¿Qué es la prevalencia?**  
 La prevalencia es el porcentaje de personas dentro de una población que presentan una condición específica en un período determinado.  
-Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre estados, grupos etarios y géneros.
+Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre estados, grupos etarios y sexo.
 """)
 
     st.divider()
@@ -106,33 +114,28 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
 
     st.sidebar.header("Parámetros de Análisis")
 
-    col_tema = 'Topic' if 'Topic' in df.columns else 'Question'
-    temas = sorted(df[col_tema].dropna().unique())
-    tema_sel = st.sidebar.selectbox("Seleccione el Tema de Análisis:", temas)
-
     df_solo_edad = df[df['StratificationCategory1'] == 'Age Group']
-    edades = sorted(df_solo_edad['Stratification1'].dropna().unique())
+    edades = sorted(df_solo_edad['Rango de Edad'].dropna().unique())
     if not edades:
-        edades = sorted(df['Stratification1'].dropna().unique())
+        edades = sorted(df['Rango de Edad'].dropna().unique())
 
-    edad_sel = st.sidebar.selectbox("Seleccione el Grupo Etario:", edades)
+    edad_sel = st.sidebar.selectbox("Seleccione el Rango de Edad:", edades)
 
-    df_base_tema = df[df[col_tema] == tema_sel]
-    df_mapa = df_base_tema[df_base_tema['Stratification1'] == edad_sel]
+    df_filtrado = df[df['Rango de Edad'] == edad_sel]
 
     # Métricas
     col1, col2, col3, col4 = st.columns(4)
 
-    avg_val = df_mapa['Data_Value'].mean()
-    col1.metric("Prevalencia Promedio (%)", f"{avg_val:.2f}%" if not pd.isna(avg_val) else "N/A")
-    col2.metric("Total de Observaciones", len(df_mapa))
-    col3.metric("Estados y Territorios Analizados", df_mapa['LocationAbbr'].nunique())
-    col4.metric("Última Actualización del Dashboard", "Feb 2026")
+    promedio = df_filtrado['Tasa de Prevalencia (%)'].mean()
+
+    col1.metric("Tasa de Prevalencia Promedio (%)", f"{promedio:.2f}%" if not pd.isna(promedio) else "N/D")
+    col2.metric("Total de Registros Analizados", len(df_filtrado))
+    col3.metric("Cobertura Geográfica (Estados y Territorios)", df_filtrado['Código Estado'].nunique())
+    col4.metric("Última Actualización del Panel", "Febrero 2026")
 
     st.divider()
 
-    # Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    pestañas = st.tabs([
         "Mapa de Prevalencia",
         "Comparativo Estatal",
         "Análisis Demográfico",
@@ -141,141 +144,109 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
         "Metodología"
     ])
 
-    # TAB 1
-    with tab1:
-        st.subheader("Prevalencia de Dificultad Cognitiva Funcional por Estado (%)")
+    # --- MAPA ---
+    with pestañas[0]:
+        st.subheader("Tasa de Prevalencia por Estado (%)")
 
-        df_geo = df_mapa.groupby(['LocationAbbr', 'LocationDesc'])['Data_Value'].mean().reset_index()
+        df_geo = df_filtrado.groupby(['Código Estado', 'Estado'])['Tasa de Prevalencia (%)'].mean().reset_index()
 
         if not df_geo.empty:
-            fig_map = px.choropleth(
+            fig_mapa = px.choropleth(
                 df_geo,
-                locations='LocationAbbr',
+                locations='Código Estado',
                 locationmode="USA-states",
-                color='Data_Value',
+                color='Tasa de Prevalencia (%)',
                 scope="usa",
                 color_continuous_scale=["#DBEAFE", "#3B82F6", "#1E3A8A"],
-                labels={'Data_Value': 'Prevalencia Autoreportada (%)'},
-                hover_name='LocationDesc'
+                labels={'Tasa de Prevalencia (%)': 'Tasa de Prevalencia (%)'},
+                hover_name='Estado'
             )
 
-            fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-            st.plotly_chart(fig_map, use_container_width=True)
+            fig_mapa.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+            st.plotly_chart(fig_mapa, use_container_width=True)
 
-    # TAB 2
-    with tab2:
-        st.subheader("Estados con Mayor y Menor Prevalencia")
+    # --- COMPARATIVO ---
+    with pestañas[1]:
+        st.subheader("Estados con Mayor y Menor Tasa de Prevalencia")
 
-        df_ranking = (
-            df_mapa.groupby('LocationDesc')['Data_Value']
+        ranking = (
+            df_filtrado.groupby('Estado')['Tasa de Prevalencia (%)']
             .mean()
             .sort_values(ascending=False)
             .reset_index()
         )
 
-        if not df_ranking.empty:
-            c_top, c_bot = st.columns(2)
+        if not ranking.empty:
+            fig_bar = px.bar(
+                ranking,
+                x='Tasa de Prevalencia (%)',
+                y='Estado',
+                orientation='h',
+                color='Tasa de Prevalencia (%)',
+                color_continuous_scale=["#DBEAFE", "#1E3A8A"]
+            )
+            fig_bar.update_layout(yaxis={'categoryorder':'total ascending'})
+            st.plotly_chart(fig_bar, use_container_width=True)
 
-            with c_top:
-                fig_top = px.bar(
-                    df_ranking.head(5),
-                    x='Data_Value',
-                    y='LocationDesc',
-                    orientation='h',
-                    color='Data_Value',
-                    color_continuous_scale=["#FED7AA", "#F97316"]
-                )
-                fig_top.update_layout(showlegend=False, yaxis={'categoryorder':'total ascending'})
-                st.plotly_chart(fig_top, use_container_width=True)
+    # --- DEMOGRÁFICO ---
+    with pestañas[2]:
+        st.subheader("Tasa de Prevalencia por Rango de Edad y Sexo")
 
-            with c_bot:
-                fig_bot = px.bar(
-                    df_ranking.tail(5),
-                    x='Data_Value',
-                    y='LocationDesc',
-                    orientation='h',
-                    color='Data_Value',
-                    color_continuous_scale=["#DBEAFE", "#1E40AF"]
-                )
-                fig_bot.update_layout(showlegend=False, yaxis={'categoryorder':'total descending'})
-                st.plotly_chart(fig_bot, use_container_width=True)
-
-    # TAB 3
-    with tab3:
-        st.subheader("Prevalencia por Grupo Etario y Género")
-
-        gender_data = (
-            df_base_tema[df_base_tema['Stratification2'].isin(['Female', 'Male'])]
-            .groupby(['Stratification1', 'Stratification2'])['Data_Value']
+        demografico = (
+            df[df['Sexo'].isin(['Female', 'Male'])]
+            .groupby(['Rango de Edad', 'Sexo'])['Tasa de Prevalencia (%)']
             .mean()
             .reset_index()
         )
 
-        if not gender_data.empty:
-            fig_gen = px.bar(
-                gender_data,
-                x='Stratification1',
-                y='Data_Value',
-                color='Stratification2',
-                barmode='group',
-                color_discrete_map={
-                    'Female': '#F97316',
-                    'Male': '#1E40AF'
-                },
-                labels={'Data_Value': 'Prevalencia Promedio (%)', 'Stratification1': 'Grupo Etario'}
+        if not demografico.empty:
+            fig_demo = px.bar(
+                demografico,
+                x='Rango de Edad',
+                y='Tasa de Prevalencia (%)',
+                color='Sexo',
+                barmode='group'
             )
+            st.plotly_chart(fig_demo, use_container_width=True)
+            st.dataframe(demografico, use_container_width=True)
 
-            st.plotly_chart(fig_gen, use_container_width=True)
-            st.table(gender_data)
+    # --- TEMPORAL ---
+    with pestañas[3]:
+        st.subheader("Evolución Temporal de la Tasa de Prevalencia (%)")
 
-    # TAB 4
-    with tab4:
-        st.subheader("Evolución Temporal de la Prevalencia (%)")
-     
-        df_trend = (
-            df_mapa.groupby("YearStart")["Data_Value"]
+        tendencia = (
+            df_filtrado.groupby("Año")["Tasa de Prevalencia (%)"]
             .mean()
             .reset_index()
-            .sort_values("YearStart")
+            .sort_values("Año")
         )
 
-        if not df_trend.empty:
-            fig_trend = px.line(
-                df_trend,
-                x="YearStart",
-                y="Data_Value",
-                markers=True,
-                labels={
-                    "YearStart": "Año",
-                    "Data_Value": "Prevalencia Promedio (%)"
-                }
+        if not tendencia.empty:
+            fig_linea = px.line(
+                tendencia,
+                x="Año",
+                y="Tasa de Prevalencia (%)",
+                markers=True
             )
+            st.plotly_chart(fig_linea, use_container_width=True)
 
-            fig_trend.update_traces(line=dict(color="#1E3A8A", width=3))
-            fig_trend.update_layout(
-                xaxis=dict(dtick=1),
-                margin={"r":0,"t":0,"l":0,"b":0}
-            )
-
-            st.plotly_chart(fig_trend, use_container_width=True)
-
-    # TAB 5
-    with tab5:
+    # --- BASE DE DATOS ---
+    with pestañas[4]:
         st.subheader("Explorador de Datos")
-        st.dataframe(df_mapa, use_container_width=True)
+        st.dataframe(df_filtrado, use_container_width=True)
 
-    # TAB 6
-    with tab6:
-        st.header("Metodología y Sostenibilidad de Datos")
-        st.write("Datos oficiales del CDC obtenidos mediante el sistema BRFSS.")
+    # --- METODOLOGÍA ---
+    with pestañas[5]:
+        st.header("Metodología")
+        st.write("Datos oficiales obtenidos mediante el sistema BRFSS del CDC.")
 
     st.divider()
     st.markdown("""
 <div style="text-align: center; color: #6B7280; font-size: 0.8em;">
-Informe Técnico - Alzheimer’s Disease and Healthy Aging Data<br>
+Informe Técnico - Enfermedad de Alzheimer y Envejecimiento Saludable<br>
 Elaborado por: Valentina Torres, Melanie Perez, Natalia Sojo, Dana Ramirez
 </div>
 """, unsafe_allow_html=True)
 
 else:
-    st.error("Error al cargar el recurso de datos. Verifique la integridad del archivo CSV.")
+    st.error("Error al cargar el archivo de datos. Verifique la integridad del CSV.")
