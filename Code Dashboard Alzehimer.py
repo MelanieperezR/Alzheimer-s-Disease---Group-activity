@@ -258,20 +258,51 @@ if df is not None:
 
     # TAB 6
     with tab6:
-        st.header("Metodología del Análisis")
-        st.write(
-            "Este análisis se basa en datos oficiales del CDC sobre envejecimiento saludable y enfermedad de Alzheimer. "
-            "El enfoque sigue el framework QUEST para estructurar el análisis y facilitar la toma de decisiones basada en evidencia."
-        )
-
+        st.header("Metodología y Sostenibilidad de Datos")
+        st.subheader("1. Fuente de Datos Oficial")
+        st.markdown("""
+        **Origen:** Centers for Disease Control and Prevention (CDC).  
+        **Dataset:** Alzheimer's Disease and Healthy Aging Data.  
+        **URL:** [Portal de Datos del CDC](https://data.cdc.gov/Healthy-Aging/Alzheimer-s-Disease-and-Healthy-Aging-Data/hfr9-rurv/about_data)  
+        **Fecha de acceso:** Febrero 2026.
+        """)
+ 
+        st.subheader("2. Framework QUEST Aplicado")
+        st.info("""
+        * **Question:** ¿Cómo impacta el deterioro cognitivo a los diferentes estados y géneros en EE.UU.?
+        * **Understand:** Análisis de variables demográficas y métricas de salud pública.
+        * **Explore:** Identificación de valores atípicos mediante rankings y mapas de calor geográficos.
+        * **Synthesize:** Correlación entre la edad avanzada y la disparidad de género en los reportes de salud.
+        * **Tell:** Visualización orientada a la toma de decisiones para audiencias no técnicas.
+        """)
+ 
+        st.subheader("3. Diccionario de Variables")
+        st.markdown("""
+        | Variable | Descripción | Tipo de Dato |
+        | :--- | :--- | :--- |
+        | **LocationDesc** | Nombre de la ubicación geográfica analizada. | Texto |
+        | **Topic** | Descripción del tema de salud estudiado. | Texto |
+        | **Question** | Pregunta realizada en la encuesta. | Texto |
+        | **Data_Value** | Valor numérico de la prevalencia. | Número |
+        | **Stratification1** | Clasificación por grupo de edad. | Texto |
+        | **Stratification2** | Clasificación por género. | Texto |
+        | **Geolocation** | Coordenadas para la representación en mapas. | Geográfico |
+        """)
+ 
+        st.subheader("4. Guía de Actualización")
+        st.write("""
+        Para mantener este dashboard vigente, se debe descargar el archivo actualizado desde el portal Open Data del CDC. 
+        Al reemplazar el archivo en el repositorio, las métricas y visualizaciones se recalcularán de manera inmediata.
+        """)
+ 
+    # Pie de página formal
     st.divider()
-
     st.markdown("""
-    <div style="text-align: center; color: #6B7280; font-size: 0.8em;">
-        Informe Técnico - Alzheimer’s Disease and Healthy Aging Data<br>
-        Elaborado por: Valentina Torres, Melanie Paola Perez, Natalia Sojo y Dana Valentina Ramirez.
-    </div>
-    """, unsafe_allow_html=True)
-
+<div style="text-align: center; color: #6B7280; font-size: 0.8em;">
+            Informe Técnico - Alzheimer’s Disease and Healthy Aging Data<br>
+            Elaborado por: Valentina Torres, Melanie Paola Perez, Natalia Sojo y Dana Valentina Ramirez.
+</div>
+        """, unsafe_allow_html=True)
+ 
 else:
-    st.error("Error al cargar el archivo CSV.")
+    st.error("Error al cargar el recurso de datos. Verifique la integridad del archivo CSV.")
