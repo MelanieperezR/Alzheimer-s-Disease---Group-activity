@@ -5,9 +5,11 @@ import re
  
 # Configuración técnica
 st.set_page_config(
-    page_title="Informe: Salud Cognitiva y Envejecimiento",
+    page_title= " Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos (BRFSS)",
     layout="wide",
     initial_sidebar_state="expanded"
+
+ st.caption("Indicador basado en datos autoreportados del Behavioral Risk Factor Surveillance System (BRFSS).")
 )
 
 # Estilo profesional
@@ -111,10 +113,10 @@ if df is not None:
     col1, col2, col3, col4 = st.columns(4)
 
     avg_val = df_mapa['Data_Value'].mean()
-    col1.metric("Prevalencia Promedio", f"{avg_val:.2f}%" if not pd.isna(avg_val) else "N/A")
-    col2.metric("Total de Registros", len(df_mapa))
-    col3.metric("Estados Analizados", df_mapa['LocationAbbr'].nunique())
-    col4.metric("Actualización", "Feb 2026")
+    col1.metric("Prevalencia Promedio (%)", f"{avg_val:.2f}%" if not pd.isna(avg_val) else "N/A")
+    col2.metric("Total de Observaciones", len(df_mapa))
+    col3.metric("Estados y Territorios Analizados", df_mapa['LocationAbbr'].nunique())
+    col4.metric("Última Actualización del Dashboard", "Feb 2026")
 
     st.divider()
 
@@ -130,7 +132,7 @@ if df is not None:
 
     # TAB 1
     with tab1:
-        st.subheader("Prevalencia por Estado en EE.UU.")
+        st.subheader("Prevalencia de Dificultad Cognitiva Funcional por Estado (%)")
 
         df_geo = df_mapa.groupby(['LocationAbbr', 'LocationDesc'])['Data_Value'].mean().reset_index()
 
@@ -217,8 +219,8 @@ if df is not None:
 
     # TAB 4
     with tab4:
-        st.subheader("Evolución de la Prevalencia a lo Largo del Tiempo")
-
+        st.subheader("Evolución Temporal de la Prevalencia (%)")
+     
         df_trend = (
             df_mapa.groupby("YearStart")["Data_Value"]
             .mean()
@@ -300,7 +302,7 @@ if df is not None:
     st.markdown("""
 <div style="text-align: center; color: #6B7280; font-size: 0.8em;">
             Informe Técnico - Alzheimer’s Disease and Healthy Aging Data<br>
-            Elaborado por: Valentina Torres, Melanie Paola Perez, Natalia Sojo y Dana Valentina Ramirez.
+            Elaborado por: Valentina Torres, Melanie Perez, Natalia Sojo, Dana Ramirez
 </div>
         """, unsafe_allow_html=True)
  
