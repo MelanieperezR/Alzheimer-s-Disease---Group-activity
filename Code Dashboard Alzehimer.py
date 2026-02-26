@@ -5,7 +5,7 @@ import re
  
 # Configuración técnica
 st.set_page_config(
-    page_title="Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos (BRFSS)",
+    page_title="Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -84,18 +84,34 @@ if df is not None:
         "Stratification2": "Sexo"
     })
 
+    # Título principal
     st.title("Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos")
 
+    # Bloque informativo institucional
     st.info("""
 **Fuente de los datos:** Behavioral Risk Factor Surveillance System (BRFSS) – CDC.  
 Los valores corresponden a prevalencia autoreportada de dificultad cognitiva funcional.
+
+**¿Qué es la prevalencia?**  
+La prevalencia es el porcentaje de personas dentro de una población que presentan una condición específica en un período determinado.  
+Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre estados, grupos etarios y géneros.
 """)
 
     st.divider()
 
     # Sidebar
-    st.sidebar.header("Parámetros de Análisis")
 
+    st.sidebar.markdown("### Integrantes del Proyecto")
+    st.sidebar.markdown("""
+    * Valentina Torres Lujo
+    * Melanie Perez Rojano
+    * Natalia Sojo Jimenez
+    * Dana Ramirez Suarez
+    """)
+    st.sidebar.divider()
+
+    st.sidebar.header("Parámetros de Análisis")
+ 
     df_solo_edad = df[df['StratificationCategory1'] == 'Age Group']
     edades = sorted(df_solo_edad['Rango de edad'].dropna().unique())
     if not edades:
