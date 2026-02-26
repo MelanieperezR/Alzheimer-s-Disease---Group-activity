@@ -5,9 +5,10 @@ import re
  
 # Configuración técnica
 st.set_page_config(
-    page_title= " Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos (BRFSS)",
+    page_title="Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos (BRFSS)",
     layout="wide",
-    initial_sidebar_state="expanded"  )
+    initial_sidebar_state="expanded"
+)
 
 # Estilo profesional
 st.markdown("""
@@ -78,7 +79,20 @@ df = load_data()
 
 if df is not None:
 
-    st.title("Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos (BRFSS)")
+    # Título principal
+    st.title("Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos")
+
+    # Bloque informativo institucional
+    st.info("""
+**Fuente de los datos:** Behavioral Risk Factor Surveillance System (BRFSS) – CDC.  
+Los valores corresponden a prevalencia autoreportada de dificultad cognitiva funcional.
+
+**¿Qué es la prevalencia?**  
+La prevalencia es el porcentaje de personas dentro de una población que presentan una condición específica en un período determinado.  
+Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre estados, grupos etarios y géneros.
+""")
+
+    st.divider()
 
     # Sidebar
     st.sidebar.markdown("### Integrantes del Proyecto")
@@ -141,7 +155,7 @@ if df is not None:
                 color='Data_Value',
                 scope="usa",
                 color_continuous_scale=["#DBEAFE", "#3B82F6", "#1E3A8A"],
-                labels={'Data_Value': 'Prevalencia (%)'},
+                labels={'Data_Value': 'Prevalencia Autoreportada (%)'},
                 hover_name='LocationDesc'
             )
 
@@ -208,7 +222,7 @@ if df is not None:
                     'Female': '#F97316',
                     'Male': '#1E40AF'
                 },
-                labels={'Data_Value': 'Promedio (%)', 'Stratification1': 'Edad'}
+                labels={'Data_Value': 'Prevalencia Promedio (%)', 'Stratification1': 'Grupo Etario'}
             )
 
             st.plotly_chart(fig_gen, use_container_width=True)
@@ -245,11 +259,6 @@ if df is not None:
 
             st.plotly_chart(fig_trend, use_container_width=True)
 
-        st.caption(
-            "La prevalencia representa el porcentaje de la población que presenta una condición específica en un período determinado. "
-            "Este indicador permite dimensionar la magnitud del fenómeno en términos poblacionales y compararlo entre regiones o grupos demográficos."
-        )
-
     # TAB 5
     with tab5:
         st.subheader("Explorador de Datos")
@@ -258,50 +267,15 @@ if df is not None:
     # TAB 6
     with tab6:
         st.header("Metodología y Sostenibilidad de Datos")
-        st.subheader("1. Fuente de Datos Oficial")
-        st.markdown("""
-        **Origen:** Centers for Disease Control and Prevention (CDC).  
-        **Dataset:** Alzheimer's Disease and Healthy Aging Data.  
-        **URL:** [Portal de Datos del CDC](https://data.cdc.gov/Healthy-Aging/Alzheimer-s-Disease-and-Healthy-Aging-Data/hfr9-rurv/about_data)  
-        **Fecha de acceso:** Febrero 2026.
-        """)
- 
-        st.subheader("2. Framework QUEST Aplicado")
-        st.info("""
-        * **Question:** ¿Cómo impacta el deterioro cognitivo a los diferentes estados y géneros en EE.UU.?
-        * **Understand:** Análisis de variables demográficas y métricas de salud pública.
-        * **Explore:** Identificación de valores atípicos mediante rankings y mapas de calor geográficos.
-        * **Synthesize:** Correlación entre la edad avanzada y la disparidad de género en los reportes de salud.
-        * **Tell:** Visualización orientada a la toma de decisiones para audiencias no técnicas.
-        """)
- 
-        st.subheader("3. Diccionario de Variables")
-        st.markdown("""
-        | Variable | Descripción | Tipo de Dato |
-        | :--- | :--- | :--- |
-        | **LocationDesc** | Nombre de la ubicación geográfica analizada. | Texto |
-        | **Topic** | Descripción del tema de salud estudiado. | Texto |
-        | **Question** | Pregunta realizada en la encuesta. | Texto |
-        | **Data_Value** | Valor numérico de la prevalencia. | Número |
-        | **Stratification1** | Clasificación por grupo de edad. | Texto |
-        | **Stratification2** | Clasificación por género. | Texto |
-        | **Geolocation** | Coordenadas para la representación en mapas. | Geográfico |
-        """)
- 
-        st.subheader("4. Guía de Actualización")
-        st.write("""
-        Para mantener este dashboard vigente, se debe descargar el archivo actualizado desde el portal Open Data del CDC. 
-        Al reemplazar el archivo en el repositorio, las métricas y visualizaciones se recalcularán de manera inmediata.
-        """)
- 
-    # Pie de página formal
+        st.write("Datos oficiales del CDC obtenidos mediante el sistema BRFSS.")
+
     st.divider()
     st.markdown("""
 <div style="text-align: center; color: #6B7280; font-size: 0.8em;">
-            Informe Técnico - Alzheimer’s Disease and Healthy Aging Data<br>
-            Elaborado por: Valentina Torres, Melanie Perez, Natalia Sojo, Dana Ramirez
+Informe Técnico - Alzheimer’s Disease and Healthy Aging Data<br>
+Elaborado por: Valentina Torres, Melanie Perez, Natalia Sojo, Dana Ramirez
 </div>
-        """, unsafe_allow_html=True)
- 
+""", unsafe_allow_html=True)
+
 else:
     st.error("Error al cargar el recurso de datos. Verifique la integridad del archivo CSV.")
