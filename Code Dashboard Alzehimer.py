@@ -162,45 +162,60 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
             fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
             st.plotly_chart(fig_map, use_container_width=True)
 
-    # TAB 2 (NUEVO GRÁFICO AÑADIDO)
-    with tab2:
-        st.subheader("Comparativa de Extremos: Top 5 vs Bottom 5")
+    
+     # TAB 2 (NUEVO GRÁFICO AÑADIDO)
+with tab2:
+    st.subheader("Comparativa de Extremos: Top 5 vs Bottom 5")
 
-        df_ranking = (
-            df_mapa.groupby('LocationDesc')['Data_Value']
-            .mean()
-            .sort_values(ascending=False)
-            .reset_index()
-        )
+    df_ranking = (
+        df_mapa.groupby('LocationDesc')['Data_Value']
+        .mean()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
 
-        if not df_ranking.empty:
-            c_top, c_bot = st.columns(2)
+    if not df_ranking.empty:
+        c_top, c_bot = st.columns(2)
 
-            with c_top:
-                st.markdown("**Estados con mayor prevalencia**")
-                fig_top = px.bar(
-                    df_ranking.head(5),
-                    x='Data_Value',
-                    y='LocationDesc',
-                    orientation='h',
-                    color='Data_Value',
-                    color_continuous_scale='Reds'
-                )
-                fig_top.update_layout(showlegend=False, yaxis={'categoryorder':'total ascending'})
-                st.plotly_chart(fig_top, use_container_width=True)
+        with c_top:
+            st.markdown("**Estados con mayor prevalencia**")
+            fig_top = px.bar(
+                df_ranking.head(5),
+                x='Data_Value',
+                y='LocationDesc',
+                orientation='h',
+                color='Data_Value',
+                color_continuous_scale='Reds',
+                labels={
+                    'Data_Value': 'Tasa de Prevalencia (%)',
+                    'LocationDesc': 'Estado'
+                }
+            )
+            fig_top.update_layout(
+                showlegend=False,
+                yaxis={'categoryorder':'total ascending'}
+            )
+            st.plotly_chart(fig_top, use_container_width=True)
 
-            with c_bot:
-                st.markdown("**Estados con menor prevalencia**")
-                fig_bot = px.bar(
-                    df_ranking.tail(5),
-                    x='Data_Value',
-                    y='LocationDesc',
-                    orientation='h',
-                    color='Data_Value',
-                    color_continuous_scale='Greens'
-                )
-                fig_bot.update_layout(showlegend=False, yaxis={'categoryorder':'total descending'})
-                st.plotly_chart(fig_bot, use_container_width=True)
+        with c_bot:
+            st.markdown("**Estados con menor prevalencia**")
+            fig_bot = px.bar(
+                df_ranking.tail(5),
+                x='Data_Value',
+                y='LocationDesc',
+                orientation='h',
+                color='Data_Value',
+                color_continuous_scale='Greens',
+                labels={
+                    'Data_Value': 'Tasa de Prevalencia (%)',
+                    'LocationDesc': 'Estado'
+                }
+            )
+            fig_bot.update_layout(
+                showlegend=False,
+                yaxis={'categoryorder':'total descending'}
+            )
+            st.plotly_chart(fig_bot, use_container_width=True)
 
     # TAB 3
     with tab3:
