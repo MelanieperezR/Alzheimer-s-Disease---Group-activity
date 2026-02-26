@@ -193,7 +193,7 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
                 st.markdown("**Estados con menor prevalencia**")
                 fig_bot = px.bar(
                     df_ranking.tail(5),
-                    x='Tasa de Prevalencia (%)',
+                    x='Data_Value',
                     y='LocationDesc',
                     orientation='h',
                     color='Data_Value',
