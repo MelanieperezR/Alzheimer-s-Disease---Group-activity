@@ -78,7 +78,7 @@ df = load_data()
 
 if df is not None:
 
-    st.title("Informe Nacional: Salud Cognitiva y Envejecimiento")
+    st.title("Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos (BRFSS)")
 
     # Sidebar
     st.sidebar.markdown("### Integrantes del Proyecto")
