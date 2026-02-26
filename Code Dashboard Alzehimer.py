@@ -44,7 +44,7 @@ def extract_coords(point_str):
 @st.cache_data
 def load_data():
     """Carga y normalización del conjunto de datos"""
-    file_path = "Alzheimer's_Disease_and_Healthy_Aging_Data_20260221.csv"
+    file_path = "Alzheimer's_Disease_and_Healthy_Aging_Data_2026.csv"
     try:
         df = pd.read_csv(file_path, sep=None, engine='python', on_bad_lines='skip')
         # Normalización de variables numéricas
