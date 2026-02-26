@@ -79,7 +79,6 @@ df = load_data()
 
 if df is not None:
 
-    # Renombrar columnas para visualización profesional
     df = df.rename(columns={
         "Stratification1": "Rango de edad",
         "Stratification2": "Sexo"
@@ -90,24 +89,11 @@ if df is not None:
     st.info("""
 **Fuente de los datos:** Behavioral Risk Factor Surveillance System (BRFSS) – CDC.  
 Los valores corresponden a prevalencia autoreportada de dificultad cognitiva funcional.
-
-**¿Qué es la prevalencia?**  
-La prevalencia es el porcentaje de personas dentro de una población que presentan una condición específica en un período determinado.  
-Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre estados, grupos etarios y géneros.
 """)
 
     st.divider()
 
     # Sidebar
-    st.sidebar.markdown("### Integrantes del Proyecto")
-    st.sidebar.markdown("""
-    * Valentina Torres Lujo
-    * Melanie Perez Rojano
-    * Natalia Sojo Jimenez
-    * Dana Ramirez Suarez
-    """)
-    st.sidebar.divider()
-
     st.sidebar.header("Parámetros de Análisis")
 
     df_solo_edad = df[df['StratificationCategory1'] == 'Age Group']
@@ -160,26 +146,46 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
             fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
             st.plotly_chart(fig_map, use_container_width=True)
 
-     # TAB 2
-      with tab2:
+    # TAB 2 (NUEVO GRÁFICO AÑADIDO)
+    with tab2:
         st.subheader("Comparativa de Extremos: Top 5 vs Bottom 5")
-        df_ranking = df_mapa.groupby('LocationDesc')['Data_Value'].mean().sort_values(ascending=False).reset_index()
- 
+
+        df_ranking = (
+            df_mapa.groupby('LocationDesc')['Data_Value']
+            .mean()
+            .sort_values(ascending=False)
+            .reset_index()
+        )
+
         if not df_ranking.empty:
             c_top, c_bot = st.columns(2)
+
             with c_top:
                 st.markdown("**Estados con mayor prevalencia**")
-                fig_top = px.bar(df_ranking.head(5), x='Data_Value', y='LocationDesc', orientation='h',
-                                 color='Data_Value', color_continuous_scale='Reds')
+                fig_top = px.bar(
+                    df_ranking.head(5),
+                    x='Data_Value',
+                    y='LocationDesc',
+                    orientation='h',
+                    color='Data_Value',
+                    color_continuous_scale='Reds'
+                )
                 fig_top.update_layout(showlegend=False, yaxis={'categoryorder':'total ascending'})
                 st.plotly_chart(fig_top, use_container_width=True)
- 
+
             with c_bot:
                 st.markdown("**Estados con menor prevalencia**")
-                fig_bot = px.bar(df_ranking.tail(5), x='Data_Value', y='LocationDesc', orientation='h',
-                                 color='Data_Value', color_continuous_scale='Greens')
+                fig_bot = px.bar(
+                    df_ranking.tail(5),
+                    x='Data_Value',
+                    y='LocationDesc',
+                    orientation='h',
+                    color='Data_Value',
+                    color_continuous_scale='Greens'
+                )
                 fig_bot.update_layout(showlegend=False, yaxis={'categoryorder':'total descending'})
                 st.plotly_chart(fig_bot, use_container_width=True)
+
     # TAB 3
     with tab3:
         st.subheader("Tasa de Prevalencia por Rango de Edad y Sexo")
@@ -228,11 +234,7 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
             )
 
             fig_trend.update_traces(line=dict(color="#1E3A8A", width=3))
-            fig_trend.update_layout(
-                xaxis=dict(dtick=1),
-                margin={"r":0,"t":0,"l":0,"b":0}
-            )
-
+            fig_trend.update_layout(xaxis=dict(dtick=1))
             st.plotly_chart(fig_trend, use_container_width=True)
 
     # TAB 5
@@ -242,16 +244,8 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
 
     # TAB 6
     with tab6:
-        st.header("Metodología y Sostenibilidad de Datos")
+        st.header("Metodología")
         st.write("Datos oficiales del CDC obtenidos mediante el sistema BRFSS.")
-
-    st.divider()
-    st.markdown("""
-<div style="text-align: center; color: #6B7280; font-size: 0.8em;">
-Informe Técnico - Alzheimer’s Disease and Healthy Aging Data<br>
-Elaborado por: Valentina Torres, Melanie Perez, Natalia Sojo, Dana Ramirez
-</div>
-""", unsafe_allow_html=True)
 
 else:
     st.error("Error al cargar el recurso de datos. Verifique la integridad del archivo CSV.")
