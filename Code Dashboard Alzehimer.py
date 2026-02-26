@@ -75,7 +75,7 @@ if df is not None:
     st.sidebar.markdown("""
     * Valentina Torres Lujo
     * Melanie Perez Rojano
-    * Natalia Sojo Jimenex
+    * Natalia Sojo Jimenez
     * Dana Ramirez Suarez
     """)
     st.sidebar.divider()
@@ -106,13 +106,14 @@ if df is not None:
     st.divider()
  
     # --- ESTRUCTURA DE CONTENIDO ---
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "Distribución Geográfica", 
-        "Ranking de Estados", 
-        "Análisis por Género", 
-        "Repositorio de Datos",
-        "Documentación y QUEST"
-    ])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "Distribución Geográfica", 
+    "Ranking de Estados", 
+    "Análisis por Género",
+    "Tendencia Temporal",
+    "Repositorio de Datos",
+    "Documentación y QUEST"
+])
  
     with tab1:
         st.subheader("Visualización Geoespacial de Prevalencia")
@@ -162,12 +163,36 @@ if df is not None:
             st.plotly_chart(fig_gen, use_container_width=True)
             st.markdown("### Resumen Estadístico")
             st.table(gender_data)
+
+     with tab4:
+        st.subheader("Tendencia de Prevalencia a través del Tiempo")
+
+        df_trend = df_mapa.groupby("YearStart")["Data_Value"].mean().reset_index()
+
+        if not df_trend.empty:
+            fig_trend = px.line(
+                df_trend,
+                x="YearStart",
+                y="Data_Value",
+                markers=True,
+                labels={
+                    "YearStart": "Año",
+                    "Data_Value": "Prevalencia Promedio (%)"
+                }
+            )
+
+            fig_trend.update_layout(
+                xaxis=dict(dtick=1),
+                margin={"r":0,"t":0,"l":0,"b":0}
+            )
+
+            st.plotly_chart(fig_trend, use_container_width=True)
  
-    with tab4:
+    with tab5:
         st.subheader("Explorador de Datos del Informe")
         st.dataframe(df_mapa, use_container_width=True)
  
-    with tab5:
+    with tab6:
         st.header("Metodología y Sostenibilidad de Datos")
         st.subheader("1. Fuente de Datos Oficial")
         st.markdown("""
