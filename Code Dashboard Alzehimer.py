@@ -175,14 +175,14 @@ Este indicador permite dimensionar la magnitud del fenómeno y compararlo entre 
             c_top, c_bot = st.columns(2)
             with c_top:
                 st.markdown("**Estados con mayor prevalencia**")
-                fig_top = px.bar(df_ranking.head(5), x='Tasa de Prevalencia (%)', y='Estado , orientation='h',
+                fig_top = px.bar(df_ranking.head(5), x='Tasa de Prevalencia (%)', y='Estado' , orientation='h',
                                  color='Data_Value', color_continuous_scale='Reds')
                 fig_top.update_layout(showlegend=False, yaxis={'categoryorder':'total ascending'})
                 st.plotly_chart(fig_top, use_container_width=True)
  
             with c_bot:
                 st.markdown("**Estados con menor prevalencia**")
-                fig_bot = px.bar(df_ranking.tail(5),  x='Tasa de Prevalencia (%)', y='Estado , orientation='h',
+                fig_bot = px.bar(df_ranking.tail(5),  x='Tasa de Prevalencia (%)', y='Estado' , orientation='h',
                                  color='Data_Value', color_continuous_scale='Greens')
                 fig_bot.update_layout(showlegend=False, yaxis={'categoryorder':'total descending'})
                 st.plotly_chart(fig_bot, use_container_width=True)
