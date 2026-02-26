@@ -9,9 +9,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 
- st.caption("Indicador basado en datos autoreportados del Behavioral Risk Factor Surveillance System (BRFSS).")
-)
-
 # Estilo profesional
 st.markdown("""
 <style>
