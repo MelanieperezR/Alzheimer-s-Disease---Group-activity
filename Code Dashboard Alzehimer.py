@@ -7,7 +7,10 @@ import re
 st.set_page_config(
     page_title= " Prevalencia de Deterioro Cognitivo Funcional en Población Adulta de Estados Unidos (BRFSS)",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded"  )
+
+ st.caption("Indicador basado en datos autoreportados del Behavioral Risk Factor Surveillance System (BRFSS).")
+)
 
 # Estilo profesional
 st.markdown("""
